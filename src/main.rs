@@ -22,3 +22,14 @@ fn main() {
         println!("{}", line.unwrap());
     }
 }
+
+#[cfg(test)]
+mod tests {
+    #[allow(unused_imports)]
+    use super::*;
+
+    #[test]
+    fn test_example() {
+        assert_eq!(1, 1)
+    }
+}
