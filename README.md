@@ -1,6 +1,14 @@
-# envsub
+# 🌳 envsub
+
+Environment variable substitution with Bash-esque variable expansion.
 
 ## Getting started
+
+### Installation and usage
+
+```bash
+envsub
+```
 
 ```yaml
 containers:

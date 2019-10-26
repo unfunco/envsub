@@ -1,4 +1,5 @@
-//! Crate `envsub` provides environment substitution.
+//! Crate `envsub` provides environment variable substitution with Bash-esque
+//! variable expansion.
 
 // Copyright © 2019 Daniel Morris
 //
@@ -23,8 +24,8 @@ fn main() {
     }
 }
 
-/// Expands a string.
-pub fn expand(input: &str) -> String {
+/// Parses the input string.
+pub fn parse(input: &str) -> String {
     let output = String::from(input);
     output
 }
@@ -35,7 +36,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_expand() {
-        assert_eq!("Hello, world!", expand("Hello, world!"));
+    fn test_parse() {
+        assert_eq!("Hello, world!", parse("Hello, world!"));
     }
 }
