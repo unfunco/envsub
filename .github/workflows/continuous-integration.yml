@@ -1,0 +1,21 @@
+name: Continuous-integration
+
+on:
+  pull_request: {}
+  push:
+    branches:
+    - master
+    tags:
+    - "*"
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-18.04
+    container:
+      image: rust:1.38.0
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+    - name: Run unit tests
+      run: cargo test
