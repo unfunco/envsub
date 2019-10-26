@@ -11,14 +11,23 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+//! Crate `envsub` provides environment variable substitution with Bash-esque
+//! variable expansion.
 
-use std::io::{self, BufRead};
+/// Parses the input string and returns the parsed string.
+pub fn parse(input: &str) -> String {
+    let output = String::from(input);
+    output
+}
 
-fn main() -> io::Result<()> {
-    let stdin = io::stdin();
-    for line in stdin.lock().lines() {
-        println!("{}", line.unwrap());
+#[cfg(test)]
+mod tests {
+    #[allow(unused_imports)]
+    use super::*;
+
+    #[test]
+    fn test_parse() {
+        assert_eq!("Hello, world!", parse("Hello, world!"));
     }
-
-    Ok(())
 }
