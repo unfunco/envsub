@@ -12,13 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::io::{self, BufRead};
+use std::io::{self};
 
-fn main() -> io::Result<()> {
-    let stdin = io::stdin();
-    for line in stdin.lock().lines() {
-        println!("{}", line.unwrap());
-    }
-
-    Ok(())
-}
+fn main() -> io::Result<()> { Ok(()) }

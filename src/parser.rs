@@ -12,6 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+struct Parser<'t, 'a: 't> {
+    tokens: &'t [(Token<'a>, Span)],
+    cursor: usize,
+}
+
+impl<'t, 'a: 't> Parser<'t, 'a> {
+    fn new(tokens: &'t [(Token<'a>, Span)]) -> Parser<'t, 'a> {
+        Parser {
+            tokens: tokens,
+            cursor: 0,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     #[allow(unused_imports)]
