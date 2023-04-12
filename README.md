@@ -1,5 +1,7 @@
 # envsub
 
+**WIP**
+
 Environment variable substitution.
 
 ## Getting started
@@ -19,6 +21,8 @@ spec:
   containers:
   - image: nginx:${NGINX_VERSION}
     name: nginx
+    ports:
+    - containerPort: ${PORT | default(80)}
     restartPolicy: Never
 ```
 
@@ -35,6 +39,8 @@ spec:
   containers:
   - image: nginx:1.23.4
     name: nginx
+    ports:
+    - containerPort: 80
     restartPolicy: Never
 ```
 

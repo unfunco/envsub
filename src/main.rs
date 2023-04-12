@@ -12,78 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use nom::bytes::complete::{tag, take_till};
-use nom::sequence::{delimited, tuple};
-use nom::IResult;
-use std::env;
 use std::io::{self, Read};
 
-fn parse(input: &str) -> IResult<&str, (&str, &str)> {
-    let (remaining, (before, _, name)) = tuple((
-        take_till(|c| c == '$'),
-        tag("$"),
-        delimited(tag("{"), take_till(|c| c == '}'), tag("}")),
-    ))(input)?;
+mod filter;
+mod parse;
 
-    Ok((remaining, (before, name)))
-}
+pub fn envsub(input: &str) -> String {
+    let variables = parse::find_variables(input);
 
-fn envsub(contents: &str) -> String {
-    let mut output = String::new();
-    let mut remaining = contents;
-
-    while let Ok((next, (before, name))) = parse(remaining) {
-        output.push_str(before);
-
-        if let Ok(value) = env::var(name) {
-            output.push_str(&value);
-        } else {
-            eprintln!("Warning: environment variable {} not found", name);
+    let mut output = input.to_string();
+    for (placeholder, name, filters) in variables {
+        match std::env::var(&name) {
+            Ok(value) => {
+                let filtered_value = filter::apply_filters(&value, &filters);
+                output = output.replace(&placeholder, &filtered_value);
+            },
+            Err(_) => {
+                if filters.is_empty() || filters[0].0 != "default" {
+                    eprintln!(
+                        "Warning: Environment variable {} not found.",
+                        name
+                    );
+                } else {
+                    let default_value = filter::apply_filters("", &filters);
+                    output = output.replace(&placeholder, &default_value);
+                }
+            },
         }
-
-        remaining = next;
     }
 
-    output.push_str(remaining);
     output
 }
 
 fn main() -> io::Result<()> {
-    let mut contents = String::new();
-    io::stdin().read_to_string(&mut contents)?;
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input)?;
 
-    let output = envsub(&contents);
+    let output = envsub(&input);
     println!("{}", output);
 
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::envsub;
-    use std::env;
-
-    #[test]
-    fn test_no_variables() {
-        let input = "Hello, world!";
-        let output = "Hello, world!";
-        assert_eq!(envsub(input), output);
-    }
-
-    #[test]
-    fn test_single_variable() {
-        env::set_var("NAME", "Daniel");
-        let input = "Hello, ${NAME}!";
-        let output = "Hello, Daniel!";
-        assert_eq!(envsub(input), output);
-    }
-
-    #[test]
-    fn test_multiple_variables() {
-        env::set_var("FORENAME", "Daniel");
-        env::set_var("SURNAME", "Morris");
-        let input = "Hello ${FORENAME} ${SURNAME}";
-        let output = "Hello Daniel Morris";
-        assert_eq!(envsub(input), output);
-    }
 }
