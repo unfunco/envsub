@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
     branches:
-    - master
+    - main
     paths-ignore:
     - .editorconfig
     - .gitignore
@@ -11,7 +11,7 @@ on:
     - README.md
   push:
     branches:
-    - master
+    - main
     paths-ignore:
     - .editorconfig
     - .gitignore
