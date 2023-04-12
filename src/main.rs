@@ -13,24 +13,30 @@
 // limitations under the License.
 
 use nom::bytes::complete::{tag, take_till};
-use nom::sequence::{delimited, pair};
+use nom::sequence::{delimited, tuple};
 use nom::IResult;
 use std::env;
 use std::io::{self, Read};
 
 fn parse(input: &str) -> IResult<&str, (&str, &str)> {
-    delimited(tag("${"), pair(take_till(|c| c == '}'), tag("}")), tag("}"))(input)
+    let (remaining, (before, _, name)) = tuple((
+        take_till(|c| c == '$'),
+        tag("$"),
+        delimited(tag("{"), take_till(|c| c == '}'), tag("}")),
+    ))(input)?;
+
+    Ok((remaining, (before, name)))
 }
 
 fn envsub(contents: &str) -> String {
-    let mut result = String::new();
+    let mut output = String::new();
     let mut remaining = contents;
 
     while let Ok((next, (before_var, var_name))) = parse(remaining) {
-        result.push_str(before_var);
+        output.push_str(before_var);
 
         if let Ok(var_value) = env::var(var_name) {
-            result.push_str(&var_value);
+            output.push_str(&var_value);
         } else {
             eprintln!("Warning: environment variable {} not found", var_name);
         }
@@ -38,8 +44,8 @@ fn envsub(contents: &str) -> String {
         remaining = next;
     }
 
-    result.push_str(remaining);
-    result
+    output.push_str(remaining);
+    output
 }
 
 fn main() -> io::Result<()> {
@@ -50,4 +56,34 @@ fn main() -> io::Result<()> {
     println!("{}", output);
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::envsub;
+    use std::env;
+
+    #[test]
+    fn test_no_variables() {
+        let input = "Hello, world!";
+        let output = "Hello, world!";
+        assert_eq!(envsub(input), output);
+    }
+
+    #[test]
+    fn test_single_variable() {
+        env::set_var("NAME", "Daniel");
+        let input = "Hello, ${NAME}!";
+        let output = "Hello, Daniel!";
+        assert_eq!(envsub(input), output);
+    }
+
+    #[test]
+    fn test_multiple_variables() {
+        env::set_var("FORENAME", "Daniel");
+        env::set_var("SURNAME", "Morris");
+        let input = "Hello ${FORENAME} ${SURNAME}";
+        let output = "Hello Daniel Morris";
+        assert_eq!(envsub(input), output);
+    }
 }
