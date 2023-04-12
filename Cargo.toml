@@ -1,7 +1,8 @@
 [package]
+authors = ["Daniel Morris <daniel@honestempire.com>"]
+edition = "2021"
 name = "envsub"
 version = "0.1.0"
-authors = ["Daniel Morris <daniel@honestempire.com>"]
-edition = "2018"
 
 [dependencies]
+nom = "7.1.3"

@@ -12,6 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::io::{self};
+use nom::bytes::complete::{tag, take_till};
+use nom::sequence::{delimited, pair};
+use nom::IResult;
+use std::env;
+use std::io::{self, Read};
 
-fn main() -> io::Result<()> { Ok(()) }
+fn parse(input: &str) -> IResult<&str, (&str, &str)> {
+    delimited(tag("${"), pair(take_till(|c| c == '}'), tag("}")), tag("}"))(input)
+}
+
+fn envsub(contents: &str) -> String {
+    let mut result = String::new();
+    let mut remaining = contents;
+
+    while let Ok((next, (before_var, var_name))) = parse(remaining) {
+        result.push_str(before_var);
+
+        if let Ok(var_value) = env::var(var_name) {
+            result.push_str(&var_value);
+        } else {
+            eprintln!("Warning: environment variable {} not found", var_name);
+        }
+
+        remaining = next;
+    }
+
+    result.push_str(remaining);
+    result
+}
+
+fn main() -> io::Result<()> {
+    let mut contents = String::new();
+    io::stdin().read_to_string(&mut contents)?;
+
+    let output = envsub(&contents);
+    println!("{}", output);
+
+    Ok(())
+}
