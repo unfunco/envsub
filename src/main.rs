@@ -32,13 +32,13 @@ fn envsub(contents: &str) -> String {
     let mut output = String::new();
     let mut remaining = contents;
 
-    while let Ok((next, (before_var, var_name))) = parse(remaining) {
-        output.push_str(before_var);
+    while let Ok((next, (before, name))) = parse(remaining) {
+        output.push_str(before);
 
-        if let Ok(var_value) = env::var(var_name) {
-            output.push_str(&var_value);
+        if let Ok(value) = env::var(name) {
+            output.push_str(&value);
         } else {
-            eprintln!("Warning: environment variable {} not found", var_name);
+            eprintln!("Warning: environment variable {} not found", name);
         }
 
         remaining = next;
