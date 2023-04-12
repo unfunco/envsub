@@ -1,29 +1,44 @@
-# 🌳 envsub
+# envsub
 
-Environment variable substitution with [Twig]-inspired transformers.
+Environment variable substitution.
 
 ## Getting started
 
 ### Installation
 
+TODO
+
 ### Usage
 
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - image: nginx:${NGINX_VERSION}
+    name: nginx
+    restartPolicy: Never
+```
+
 ```bash
-envsub
+NGINX_VERSION=1.23.4 envsub < manifest.yaml
 ```
 
 ```yaml
-containers:
-- name: example-container
-  image: ${IMAGE|lowercase}
-  ports:
-  - containerPort: ${PORT|default(80)}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - image: nginx:1.23.4
+    name: nginx
+    restartPolicy: Never
 ```
 
 ## License
 
 © 2019 [Daniel Morris](https://unfun.co)  
 Made available under the terms of the [Apache License 2.0](LICENSE.md).
-
-[Twig]: https://twig.symfony.com
-[gettext]: https://www.gnu.org/software/gettext/
