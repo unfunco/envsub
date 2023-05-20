@@ -84,8 +84,8 @@ pub fn extract_placeholders(input: &str) -> Vec<Placeholder> {
 fn parse_filter(input: String) -> Filter {
     if let Some(filter) = FILTER_RE.captures(&input) {
         let name = filter[1].to_string();
-        let a0 = Some(filter[2].to_string().trim().replace('\"', ""));
-        (name, a0)
+        let arg0 = Some(filter[2].to_string().trim().replace('\"', ""));
+        (name, arg0)
     } else {
         (input, None)
     }
@@ -95,11 +95,11 @@ fn parse_filter(input: String) -> Filter {
 pub fn apply_filters(value: &str, filters: &[Filter]) -> String {
     filters
         .iter()
-        .fold(value.to_string(), |value, (filter, a0)| {
+        .fold(value.to_string(), |value, (filter, arg0)| {
             match filter.as_str() {
                 "uppercase" => uppercase(&value),
                 "lowercase" => lowercase(&value),
-                "default" => default(&value, a0.as_deref()),
+                "default" => default(&value, arg0.as_deref()),
                 "trim" => trim(&value),
                 _ => value,
             }
