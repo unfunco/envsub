@@ -26,8 +26,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
     - name: Update toolchains
-      run: rustup update stable && rustup default stable
+      run: |
+        rustup update stable
+        rustup update nightly
+        rustup component add rustfmt --toolchain nightly-x86_64-unknown-linux-gnu
+        rustup default stable
     - name: Check formatting
-      run: cargo fmt --all -- --check
+      run: cargo +nightly fmt --all --check
     - name: Run unit tests
       run: cargo test
