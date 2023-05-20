@@ -2,7 +2,9 @@
 
 **WIP**
 
-Environment variable substitution.
+A small CLI tool designed to simplify the process of placeholder replacement in
+text files. Similar to `envsubst` it is primarily used for injecting environment
+variables into configuration files.
 
 ## Getting started
 
