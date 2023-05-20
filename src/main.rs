@@ -68,7 +68,7 @@ pub fn extract_placeholders(input: &str) -> Vec<Placeholder> {
         .collect()
 }
 
-fn parse_filter(input: String) -> (String, Option<String>) {
+fn parse_filter(input: String) -> Filter {
     if let Some(filter) = FILTER_RE.captures(&input) {
         let name = filter[1].to_string();
         let a0 = Some(filter[2].to_string().trim().replace('\"', ""));
