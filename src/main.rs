@@ -23,9 +23,16 @@ lazy_static! {
         Regex::new(r"([^()\s]+)\(([^()]*)\)").unwrap();
 }
 
+// Filter represents a filter function and its optional argument.
 type Filter = (String, Option<String>);
+
+// Placeholder represents a placeholder in the input, which includes
+// the placeholder string, the environment variable name, and any filters
+// applied.
 type Placeholder = (String, String, Vec<Filter>);
 
+// envsub replaces placeholders in the input string with environment variables,
+// applying any filters that are included with the placeholders.
 pub fn envsub(input: &str) -> String {
     let placeholders = extract_placeholders(input);
     let mut output = input.to_string();
@@ -52,6 +59,7 @@ pub fn envsub(input: &str) -> String {
     output
 }
 
+// extract_placeholders parses the input string and extracts all placeholders.
 pub fn extract_placeholders(input: &str) -> Vec<Placeholder> {
     PLACEHOLDER_RE
         .captures_iter(input)
@@ -68,6 +76,7 @@ pub fn extract_placeholders(input: &str) -> Vec<Placeholder> {
         .collect()
 }
 
+// parse_filter parses a filter function and its optional argument from a string.
 fn parse_filter(input: String) -> Filter {
     if let Some(filter) = FILTER_RE.captures(&input) {
         let name = filter[1].to_string();
@@ -78,6 +87,7 @@ fn parse_filter(input: String) -> Filter {
     }
 }
 
+// apply_filters applies a sequence of filters to a value.
 pub fn apply_filters(value: &str, filters: &[Filter]) -> String {
     filters
         .iter()
@@ -106,7 +116,7 @@ fn main() -> io::Result<()> {
     io::stdin().read_to_string(&mut input)?;
 
     let output = envsub(&input);
-    println!("{}", output);
+    print!("{}", output);
 
     Ok(())
 }
