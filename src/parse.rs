@@ -16,14 +16,25 @@ use lazy_static::lazy_static;
 use regex::Regex;
 
 lazy_static! {
+    /// Regex to match a variable placeholder, which is a variable name
+    /// enclosed in "${}".
     static ref VARIABLE_REGEX: Regex = Regex::new(r"\$\{(.+?)\}").unwrap();
+    /// Regex to match a filter, which is a function name followed by optional
+    /// arguments in "()".
     static ref FILTER_REGEX: Regex =
         Regex::new(r"([^()\s]+)\(([^()]*)\)").unwrap();
 }
 
+/// Type representing a placeholder, which consists of a placeholder string,
+/// variable name, and a vector of filters.
 type Placeholder = Vec<(String, String, Vec<(String, Option<String>)>)>;
 
-pub fn find_variables(input: &str) -> Placeholder {
+/// Extract all variable placeholders from the given input string.
+///
+/// This function looks for placeholders in the input string, each represented
+/// by "${<variable>}". It splits each placeholder into a variable name and a
+/// list of filters.
+pub fn variables(input: &str) -> Placeholder {
     VARIABLE_REGEX
         .captures_iter(input)
         .map(|v| {
@@ -39,6 +50,11 @@ pub fn find_variables(input: &str) -> Placeholder {
         .collect()
 }
 
+/// Parse a filter from the given input string.
+///
+/// This function looks for a filter function and its optional argument in the
+/// input string. The filter is expected to be in the form of
+/// "<filter>(<argument>)".
 fn parse_filter(input: String) -> (String, Option<String>) {
     if let Some(filter) = FILTER_REGEX.captures(&input) {
         let name = filter[1].to_string();

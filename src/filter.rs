@@ -12,30 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub fn apply_filters(
-    input: &str,
-    filters: &[(String, Option<String>)],
-) -> String {
-    filters
-        .iter()
-        .fold(input.to_string(), |input, (filter, arg)| {
-            match filter.as_str() {
-                "uppercase" => uppercase(&input),
-                "lowercase" => lowercase(&input),
-                "default" => default(&input, arg.as_deref()),
-                _ => input,
-            }
-        })
+/// Filter type representing a filter, and an optional argument.
+/// At the moment we only have a three filters, which is pretty useless,
+/// and only one of them accepts an argument, so this type will need to
+/// be expanded upon in the future to potentially accept additional
+/// arguments.
+type Filter = (String, Option<String>);
+
+/// Apply the given filters to the given value.
+/// This functions takes a string value and a slice of filters, each filter
+/// represented in a tuple of a filter name and optional argument. It applies
+/// each filter to the value in order, passing the result of each operation to
+/// the next filter.
+pub fn apply_filters(value: &str, filters: &[Filter]) -> String {
+    filters.iter().fold(value.to_string(), |v, (filter, a0)| {
+        match filter.as_str() {
+            "uppercase" => uppercase(&v),
+            "lowercase" => lowercase(&v),
+            "default" => default(&v, a0.as_deref()),
+            _ => v,
+        }
+    })
 }
 
-fn uppercase(input: &str) -> String { input.to_uppercase() }
+/// Transform the given value to uppercase.
+fn uppercase(value: &str) -> String { value.to_uppercase() }
 
-fn lowercase(input: &str) -> String { input.to_lowercase() }
+/// Transform the given value to lowercase.
+fn lowercase(value: &str) -> String { value.to_lowercase() }
 
-fn default(input: &str, value: Option<&str>) -> String {
-    if input.is_empty() {
-        value.unwrap_or("").to_string()
+/// Replace an empty value with a default value.
+fn default(value: &str, default_value: Option<&str>) -> String {
+    if value.is_empty() {
+        default_value.unwrap_or("").to_string()
     } else {
-        input.to_string()
+        value.to_string()
     }
 }

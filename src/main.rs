@@ -18,7 +18,7 @@ mod filter;
 mod parse;
 
 pub fn envsub(input: &str) -> String {
-    let variables = parse::find_variables(input);
+    let variables = parse::variables(input);
 
     let mut output = input.to_string();
     for (placeholder, name, filters) in variables {

@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags:
+    - v*.*.*
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Update toolchains
+      run: |
+        rustup update stable
+        rustup update nightly
+        rustup component add rustfmt --toolchain nightly-x86_64-unknown-linux-gnu
+        rustup default stable
+    - name: Check formatting
+      run: cargo +nightly fmt --all --check
+    - name: Run unit tests
+      run: cargo test
+
+  release:
+    name: Create release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Update toolchains
+      run: |
+        rustup update stable
+        rustup default stable
+    - name: Create release assets
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
