@@ -52,6 +52,7 @@ spec:
 |-----------------:|------------------------------------------------------------------|
 | `default(value)` | Replaces the input with the default value if the input is empty. |
 |      `lowercase` | Transforms the characters in the input to lower case.            |
+|           `trim` | Removes whitespace from the start and end of the input.          |
 |      `uppercase` | Transforms the characters in the input to upper case.            |
 
 ## License

@@ -100,6 +100,7 @@ pub fn apply_filters(value: &str, filters: &[Filter]) -> String {
                 "uppercase" => uppercase(&value),
                 "lowercase" => lowercase(&value),
                 "default" => default(&value, a0.as_deref()),
+                "trim" => trim(&value),
                 _ => value,
             }
         })
@@ -107,6 +108,7 @@ pub fn apply_filters(value: &str, filters: &[Filter]) -> String {
 
 fn uppercase(value: &str) -> String { value.to_uppercase() }
 fn lowercase(value: &str) -> String { value.to_lowercase() }
+fn trim(value: &str) -> String { value.trim().to_string() }
 fn default(value: &str, default_value: Option<&str>) -> String {
     if value.is_empty() {
         default_value.unwrap_or("").to_string()
