@@ -18,89 +18,13 @@ use lazy_static::lazy_static;
 use regex::Regex;
 
 lazy_static! {
-    /// Regex to match a variable placeholder, which is a variable name
-    /// enclosed in "${}".
     static ref PLACEHOLDER_RE: Regex = Regex::new(r"\$\{(.+?)\}").unwrap();
-    /// Regex to match a filter, which is a function name followed by optional
-    /// arguments in "()".
     static ref FILTER_RE: Regex =
         Regex::new(r"([^()\s]+)\(([^()]*)\)").unwrap();
 }
 
-/// Filter type representing a filter, and an optional argument.
-/// At the moment we only have a three filters, which is pretty useless,
-/// and only one of them accepts an argument, so this type will need to
-/// be expanded upon in the future to potentially accept additional
-/// arguments.
 type Filter = (String, Option<String>);
-
-/// Type representing a placeholder, which is a tuple consisting of the entire
-/// placeholder string, the name of an environment variable, and a slice of
-/// Filters.
 type Placeholder = (String, String, Vec<Filter>);
-
-/// Apply the given filters to the given value.
-/// This functions takes a string value and a slice of filters, each filter
-/// represented in a tuple of a filter name and optional argument. It applies
-/// each filter to the value in order, passing the result of each operation to
-/// the next filter.
-pub fn apply_filters(value: &str, filters: &[Filter]) -> String {
-    filters.iter().fold(value.to_string(), |v, (filter, a0)| {
-        match filter.as_str() {
-            "uppercase" => uppercase(&v),
-            "lowercase" => lowercase(&v),
-            "default" => default(&v, a0.as_deref()),
-            _ => v,
-        }
-    })
-}
-
-/// Transform the given value to uppercase.
-fn uppercase(value: &str) -> String { value.to_uppercase() }
-
-/// Transform the given value to lowercase.
-fn lowercase(value: &str) -> String { value.to_lowercase() }
-
-/// Replace an empty value with a default value.
-fn default(value: &str, default_value: Option<&str>) -> String {
-    if value.is_empty() {
-        default_value.unwrap_or("").to_string()
-    } else {
-        value.to_string()
-    }
-}
-
-/// Extract all placeholders from the given input string.
-pub fn extract_placeholders(input: &str) -> Vec<Placeholder> {
-    PLACEHOLDER_RE
-        .captures_iter(input)
-        .map(|v| {
-            let placeholder = v[0].to_string();
-            let contents = v[1].trim();
-            let mut parts = contents.split('|').map(|s| s.trim().to_string());
-
-            let name = parts.next().unwrap_or_default();
-            let filters = parts.map(parse_filter).collect();
-
-            (placeholder, name, filters)
-        })
-        .collect()
-}
-
-/// Parse a filter from the given input string.
-///
-/// This function looks for a filter function and its optional argument in the
-/// input string. The filter is expected to be in the form of
-/// "<filter>(<argument>)".
-fn parse_filter(input: String) -> (String, Option<String>) {
-    if let Some(filter) = FILTER_RE.captures(&input) {
-        let name = filter[1].to_string();
-        let a0 = Some(filter[2].to_string().trim().replace('\"', ""));
-        (name, a0)
-    } else {
-        (input, None)
-    }
-}
 
 pub fn envsub(input: &str) -> String {
     let placeholders = extract_placeholders(input);
@@ -126,6 +50,55 @@ pub fn envsub(input: &str) -> String {
     }
 
     output
+}
+
+pub fn extract_placeholders(input: &str) -> Vec<Placeholder> {
+    PLACEHOLDER_RE
+        .captures_iter(input)
+        .map(|v| {
+            let placeholder = v[0].to_string();
+            let contents = v[1].trim();
+            let mut parts = contents.split('|').map(|s| s.trim().to_string());
+
+            let name = parts.next().unwrap_or_default();
+            let filters = parts.map(parse_filter).collect();
+
+            (placeholder, name, filters)
+        })
+        .collect()
+}
+
+fn parse_filter(input: String) -> (String, Option<String>) {
+    if let Some(filter) = FILTER_RE.captures(&input) {
+        let name = filter[1].to_string();
+        let a0 = Some(filter[2].to_string().trim().replace('\"', ""));
+        (name, a0)
+    } else {
+        (input, None)
+    }
+}
+
+pub fn apply_filters(value: &str, filters: &[Filter]) -> String {
+    filters
+        .iter()
+        .fold(value.to_string(), |value, (filter, a0)| {
+            match filter.as_str() {
+                "uppercase" => uppercase(&value),
+                "lowercase" => lowercase(&value),
+                "default" => default(&value, a0.as_deref()),
+                _ => value,
+            }
+        })
+}
+
+fn uppercase(value: &str) -> String { value.to_uppercase() }
+fn lowercase(value: &str) -> String { value.to_lowercase() }
+fn default(value: &str, default_value: Option<&str>) -> String {
+    if value.is_empty() {
+        default_value.unwrap_or("").to_string()
+    } else {
+        value.to_string()
+    }
 }
 
 fn main() -> io::Result<()> {
