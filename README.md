@@ -48,6 +48,12 @@ spec:
 
 ### Filters
 
+|           Filter | Description                                                      |
+|-----------------:|------------------------------------------------------------------|
+| `default(value)` | Replaces the input with the default value if the input is empty. |
+|      `lowercase` | Transforms the characters in the input to lower case.            |
+|      `uppercase` | Transforms the characters in the input to upper case.            |
+
 ## License
 
 © 2019 [Daniel Morris](https://unfun.co)  
