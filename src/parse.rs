@@ -18,10 +18,10 @@ use regex::Regex;
 lazy_static! {
     /// Regex to match a variable placeholder, which is a variable name
     /// enclosed in "${}".
-    static ref VARIABLE_REGEX: Regex = Regex::new(r"\$\{(.+?)\}").unwrap();
+    static ref PLACEHOLDER_RE: Regex = Regex::new(r"\$\{(.+?)\}").unwrap();
     /// Regex to match a filter, which is a function name followed by optional
     /// arguments in "()".
-    static ref FILTER_REGEX: Regex =
+    static ref FILTER_RE: Regex =
         Regex::new(r"([^()\s]+)\(([^()]*)\)").unwrap();
 }
 
@@ -35,7 +35,7 @@ type Placeholder = Vec<(String, String, Vec<(String, Option<String>)>)>;
 /// by "${<variable>}". It splits each placeholder into a variable name and a
 /// list of filters.
 pub fn variables(input: &str) -> Placeholder {
-    VARIABLE_REGEX
+    PLACEHOLDER_RE
         .captures_iter(input)
         .map(|v| {
             let placeholder = v[0].to_string();
@@ -56,10 +56,10 @@ pub fn variables(input: &str) -> Placeholder {
 /// input string. The filter is expected to be in the form of
 /// "<filter>(<argument>)".
 fn parse_filter(input: String) -> (String, Option<String>) {
-    if let Some(filter) = FILTER_REGEX.captures(&input) {
+    if let Some(filter) = FILTER_RE.captures(&input) {
         let name = filter[1].to_string();
-        let arg = Some(filter[2].to_string().trim().replace('\"', ""));
-        (name, arg)
+        let a0 = Some(filter[2].to_string().trim().replace('\"', ""));
+        (name, a0)
     } else {
         (input, None)
     }

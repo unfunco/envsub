@@ -2,9 +2,9 @@
 
 **WIP**
 
-A small CLI tool designed to simplify the process of placeholder replacement in
-text files. Similar to `envsubst` it is primarily used for injecting environment
-variables into configuration files.
+CLI tool designed to simplify the process of placeholder replacement in
+text files. It's similar to [envsubst] in that it is primarily used for
+injecting environment variables into configuration files.
 
 ## Getting started
 
@@ -50,3 +50,5 @@ spec:
 
 © 2019 [Daniel Morris](https://unfun.co)  
 Made available under the terms of the [Apache License 2.0](LICENSE.md).
+
+[envsubst]: https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html
