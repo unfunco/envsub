@@ -23,8 +23,11 @@ lazy_static! {
         Regex::new(r"([^()\s]+)\(([^()]*)\)").unwrap();
 }
 
+// OptionalArg represents an optional argument.
+type OptionalArg = Option<String>;
+
 // Filter represents a filter function and its optional argument.
-type Filter = (String, Option<String>);
+type Filter = (String, OptionalArg);
 
 // Placeholder represents a placeholder in the input, which includes
 // the placeholder string, the environment variable name, and any filters
