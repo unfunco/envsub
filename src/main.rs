@@ -76,7 +76,8 @@ pub fn extract_placeholders(input: &str) -> Vec<Placeholder> {
         .collect()
 }
 
-// parse_filter parses a filter function and its optional argument from a string.
+// parse_filter parses a filter function and its optional argument from a
+// string.
 fn parse_filter(input: String) -> Filter {
     if let Some(filter) = FILTER_RE.captures(&input) {
         let name = filter[1].to_string();
