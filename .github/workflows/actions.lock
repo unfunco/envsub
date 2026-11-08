@@ -5,6 +5,7 @@ version: 'v0.0.3'
 workflows:
     '.github/workflows/ci.yml':
         - 'actions/checkout@v3.7.0'
+    '.github/workflows/pr_label.yaml': []
     '.github/workflows/tag.yaml':
         - 'actions/checkout@v3.7.0'
         - 'softprops/action-gh-release@v1'
