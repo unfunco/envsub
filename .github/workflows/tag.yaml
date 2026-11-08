@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v3.7.0
     - name: Update toolchains
       run: |
         rustup update stable
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v3.7.0
     - name: Update toolchains
       run: |
         rustup update stable
